@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import regexp_extract, from_json, when
+from pyspark.sql.functions import regexp_extract, from_json, when, col
 from pyspark.sql.types import ArrayType
 
 from constants import *
@@ -32,3 +32,20 @@ class SparkRepository:
         twitter_data = twitter_data.withColumn("retweeted",
                                                when(twitter_data["text"].rlike(r'^RT @\w+:'), True).otherwise(False))
         return twitter_data.cache()
+
+    def devices_count(self):
+        result = self._twitter_data \
+            .where(col("source")
+                   .isin(DEVICES.values())) \
+            .groupby("source") \
+            .count().collect()
+
+        return [row.asDict() for row in result]
+
+    def most_retweeted(self, n):
+        result = self._twitter_data \
+            .dropDuplicates(["text", "retweet_count"]) \
+            .orderBy(col("retweet_count").desc()). \
+            limit(n).collect()
+
+        return [row.asDict() for row in result]
