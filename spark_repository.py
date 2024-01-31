@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import regexp_extract, from_json, when, col, day
+from pyspark.sql.functions import regexp_extract, from_json, when, col, day, hour
 from pyspark.sql.types import ArrayType
 
 from constants import *
@@ -61,16 +61,23 @@ class SparkRepository:
     def total_tweets_count(self):
         return self._twitter_data.count()
 
-    def tweet_frequency_by_day(self):
-        result = self._twitter_data\
-            .groupby(day("created_at").alias("day"))\
-            .count().orderBy(col("day").asc())\
+    def tweet_frequency_daily(self):
+        result = self._twitter_data \
+            .groupby(day("created_at").alias("day")) \
+            .count().orderBy(col("day").asc()) \
+            .collect()
+        return [row.asDict() for row in result]
+
+    def tweet_frequency_hourly(self):
+        result = self._twitter_data \
+            .groupby(hour("created_at").alias("hour")) \
+            .count().orderBy(col("hour").asc()) \
             .collect()
         return [row.asDict() for row in result]
 
     def tweet_lang_count(self):
-        result = self._twitter_data\
-            .groupby("lang")\
-            .count()\
+        result = self._twitter_data \
+            .groupby("lang") \
+            .count() \
             .collect()
         return [row.asDict() for row in result]
