@@ -1,6 +1,9 @@
 from flask import Flask, request
+import logging
 
 from spark_repository import SparkRepository
+
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 spark_repository = SparkRepository()
@@ -27,9 +30,14 @@ def total_tweets():
     return f"{spark_repository.total_tweets_count()}"
 
 
-@app.route("/tweets/frequency/by_day")
-def tweets_frequency_by_day():
-    return spark_repository.tweet_frequency_by_day()
+@app.route("/tweets/frequency/daily")
+def tweets_frequency_daily():
+    return spark_repository.tweet_frequency_daily()
+
+
+@app.route("/tweets/frequency/hourly")
+def tweets_frequency_hourly():
+    return spark_repository.tweet_frequency_hourly()
 
 
 @app.route("/tweets/by_lang/count")
