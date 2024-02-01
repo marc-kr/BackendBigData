@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import regexp_extract, from_json, when, col, day, hour
+from pyspark.sql.functions import regexp_extract, from_json, when, col, day, hour, explode, countDistinct, avg
 from pyspark.sql.types import ArrayType
 
 from constants import *
@@ -14,6 +14,8 @@ class SparkRepository:
     def __init__(self):
         self._spark = SparkSession.builder.config("spark.driver.bindAddress", "127.0.0.1").getOrCreate()
         self._twitter_data = self._read_twitter_data()
+        self._trump_tweets = self._twitter_data.where(f"screen_name='{TRUMP_NAME}'")
+        self._biden_tweets = self._twitter_data.where(f"screen_name='{BIDEN_NAME}'")
 
     def _read_twitter_data(self):
         file_names = [f"{DATASET_FOLDER}/tweet_USA_{d}_october.csv" for d in range(DAY_START, DAY_END + 1)]
@@ -81,3 +83,19 @@ class SparkRepository:
             .count() \
             .collect()
         return [row.asDict() for row in result]
+
+    def tweets_daily_avg(self):
+        return self._twitter_data.groupby(day(col("created_at"))).count().select(avg(col("count"))).collect()[0][0]
+
+    def most_popular_hashtags(self, limit):
+        result = self._twitter_data \
+            .select(explode(col("hashtags")).alias("hashtag")) \
+            .groupby("hashtag") \
+            .count() \
+            .orderBy(col("count").desc()) \
+            .limit(limit).collect()
+        return [row.asDict() for row in result]
+
+    def hashtags_total_count(self):
+        return self._twitter_data \
+            .select(explode(col("hashtags"))).distinct().count()
