@@ -45,5 +45,21 @@ def tweets_lang_count():
     return spark_repository.tweet_lang_count()
 
 
+@app.route("/tweets/daily_avg")
+def tweets_daily_avg():
+    return f"{spark_repository.tweets_daily_avg()}"
+
+
+@app.route("/hashtags/total_count")
+def hashtags_total_count():
+    return f"{spark_repository.hashtags_total_count()}"
+
+
+@app.route("/hashtags/most_popular")
+def most_popular_hashtags():
+    limit = int(request.args.get('limit', default=10))
+    return spark_repository.most_popular_hashtags(limit)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
