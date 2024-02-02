@@ -1,17 +1,17 @@
 from flask import Flask, request
 import logging
 
+from pyspark.sql import SparkSession
+from dataset import *
+
 from spark_repository import SparkRepository
 
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
-spark_repository = SparkRepository()
+spark = SparkSession.builder.config("spark.driver.bindAddress", "127.0.0.1").getOrCreate()
 
-
-@app.route('/')
-def hello_world():  # put application's code here
-    return 'Hello World!'
+spark_repository = SparkRepository(get_twitter_data(spark))
 
 
 @app.route("/devices/count")
