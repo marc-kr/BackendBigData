@@ -99,8 +99,5 @@ ELECTORAL_VOTES = {
 }
 
 
-COLUMNS = ["tweet_id", "created_at", "user_id_str", "text", "hashtags", "retweet_count", "favorite_count",
-           "in_reply_to_screen_name", "source", "retweeted", "lang", "location", "screen_name"]
 
-DAY_START = 1
-DAY_END = 31
+
