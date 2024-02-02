@@ -1,4 +1,4 @@
-from pyspark.sql.functions import regexp_extract, from_json, when
+from pyspark.sql.functions import regexp_extract, from_json, when, udf
 from pyspark.sql.types import ArrayType
 
 from constants import *
@@ -10,6 +10,25 @@ SEED = 42
 
 DAY_START = 1
 DAY_END = 31
+
+
+def map_state(location):
+    if location:
+        if location in STATE_CODES:
+            return location
+        if location in STATE_CODE_MAPPING.keys():
+            return STATE_CODE_MAPPING[location]
+        location_split = location.split(',')
+        for word in location_split:
+            word_stripped = word.strip()
+            if word_stripped in STATE_CODES:
+                return word_stripped
+            if word_stripped in STATE_CODE_MAPPING.keys():
+                return STATE_CODE_MAPPING[word_stripped]
+    return None
+
+
+map_state_UDF = udf(lambda location: map_state(location), StringType())
 
 
 def get_twitter_data(spark):
@@ -35,5 +54,5 @@ def get_twitter_data(spark):
     # Consideriamo retweeted i tweet che iniziano per RT @.
     twitter_data = twitter_data.withColumn("retweeted",
                                            when(twitter_data["text"].rlike(r'^RT @\w+:'), True).otherwise(False))
-
+    twitter_data = twitter_data.withColumn("location", map_state_UDF("location"))
     return twitter_data.cache()
