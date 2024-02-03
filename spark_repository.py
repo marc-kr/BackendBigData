@@ -5,8 +5,8 @@ from constants import *
 class SparkRepository:
     def __init__(self, twitter_data):
         self._twitter_data = twitter_data
-        self._trump_tweets = self._twitter_data.where(f"screen_name='{TRUMP_NAME}'")
-        self._biden_tweets = self._twitter_data.where(f"screen_name='{BIDEN_NAME}'")
+        self._trump_tweets = self._twitter_data.where(f"user_name='{TRUMP_NAME}'")
+        self._biden_tweets = self._twitter_data.where(f"user_name='{BIDEN_NAME}'")
 
     def devices_count(self):
         result = self._twitter_data \
@@ -64,3 +64,7 @@ class SparkRepository:
     def hashtags_total_count(self):
         return self._twitter_data \
             .select(explode(col("hashtags"))).distinct().count()
+
+    def tweet_count_by_state(self):
+        result = self._twitter_data.where(col("location").isNotNull()).groupby(col("location")).count().collect()
+        return [row.asDict() for row in result]
