@@ -13,6 +13,12 @@ def most_retweeted():
     return spark_repository.most_retweeted(limit)
 
 
+@app.route("/tweets/most_retweeted/by_day")
+def most_retweeted_by_day():
+    limit = int(request.args.get('limit', default=10))
+    return spark_repository.most_retweeted_tweets_by_day(limit)
+
+
 @app.route("/tweets/count/total")
 def total_tweets():
     return f"{spark_repository.total_tweets_count()}"
@@ -43,6 +49,11 @@ def tweets_daily_avg():
     return f"{spark_repository.tweets_daily_avg()}"
 
 
+@app.route("/tweets/day_with_most_count")
+def day_with_most_tweets():
+    return spark_repository.day_with_most_tweets()
+
+
 @app.route("/hashtags/total_count")
 def hashtags_total_count():
     return f"{spark_repository.hashtags_total_count()}"
@@ -52,3 +63,93 @@ def hashtags_total_count():
 def most_popular_hashtags():
     limit = int(request.args.get('limit', default=10))
     return spark_repository.most_popular_hashtags(limit)
+
+
+@app.route("/hashtags/most_popular/by_day")
+def most_popular_hashtags_by_day():
+    limit = int(request.args.get('limit', default=10))
+    return spark_repository.most_popular_hashtag_by_day(limit)
+
+
+@app.route("/biden/tweets/count")
+def biden_tweets_count():
+    return f"{spark_repository.biden_tweets_count()}"
+
+
+@app.route("/trump/tweets/count")
+def trump_tweets_count():
+    return f"{spark_repository.trump_tweets_count()}"
+
+
+@app.route("/trump/tweets/all")
+def trump_tweets():
+    limit = int(request.args.get('limit', default=10))
+    return f"{spark_repository.trump_tweets(limit)}"
+
+
+@app.route("/biden/tweets/all")
+def biden_tweets():
+    limit = int(request.args.get('limit', default=10))
+    return f"{spark_repository.biden_tweets(limit)}"
+
+
+@app.route("/biden/tweets/frequency/daily")
+def biden_tweets_daily_frequency():
+    return spark_repository.biden_tweet_daily_frequency()
+
+
+@app.route("/biden/tweets/frequency/hourly")
+def biden_tweets_hourly_frequency():
+    return spark_repository.biden_tweet_hourly_frequency()
+
+
+@app.route("/trump/tweets/frequency/daily")
+def trump_tweets_daily_frequency():
+    return spark_repository.trump_tweet_daily_frequency()
+
+
+@app.route("/trump/tweets/frequency/hourly")
+def trump_tweets_hourly_frequency():
+    return spark_repository.trump_tweet_hourly_frequency()
+
+
+@app.route("/biden/hashtags/all")
+def biden_hashtags():
+    return spark_repository.biden_hashtags()
+
+
+@app.route("/biden/hashtags/count")
+def biden_hashtags_count():
+    return f"{spark_repository.biden_hashtags_count()}"
+
+
+@app.route("/trump/hashtags/all")
+def trump_hashtags():
+    return spark_repository.trump_hashtags()
+
+
+@app.route("/trump/hashtags/count")
+def trump_hashtags_count():
+    return f"{spark_repository.trump_hashtags_count()}"
+
+
+@app.route("/biden/tweets/mentions")
+def biden_mentions():
+    return spark_repository.biden_mentions()
+
+
+@app.route("/trump/tweets/mentions")
+def trump_mentions():
+    return spark_repository.trump_mentions()
+
+
+@app.route("/biden/tweets/most_popular")
+def biden_most_popular():
+    limit = int(request.args.get('limit', default=10))
+    return spark_repository.biden_most_popular(limit)
+
+
+@app.route("/trump/tweets/most_popular")
+def trump_most_popular():
+    limit = int(request.args.get('limit', default=10))
+    return spark_repository.trump_most_popular(limit)
