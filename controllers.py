@@ -133,16 +133,6 @@ def trump_hashtags_count():
     return f"{spark_repository.trump_hashtags_count()}"
 
 
-@app.route("/biden/tweets/mentions")
-def biden_mentions():
-    return spark_repository.biden_mentions()
-
-
-@app.route("/trump/tweets/mentions")
-def trump_mentions():
-    return spark_repository.trump_mentions()
-
-
 @app.route("/biden/tweets/most_popular")
 def biden_most_popular():
     limit = int(request.args.get('limit', default=10))
@@ -153,3 +143,43 @@ def biden_most_popular():
 def trump_most_popular():
     limit = int(request.args.get('limit', default=10))
     return spark_repository.trump_most_popular(limit)
+
+
+@app.route("/biden/hashtags")
+def biden_most_used_hashtags():
+    return spark_repository.biden_most_used_hashtags()
+
+
+@app.route("/trump/hashtags")
+def trump_most_used_hashtags():
+    return spark_repository.trump_most_used_hashtags()
+
+
+@app.route("/trump/tweets/day_with_most_count")
+def trump_most_tweets_day():
+    return spark_repository.trump_most_tweets_day()
+
+
+@app.route("/biden/tweets/day_with_most_count")
+def biden_most_tweets_day():
+    return spark_repository.biden_most_tweets_day()
+
+
+@app.route("/biden/tweets/daily_avg")
+def biden_tweets_daily_avg():
+    return f"{spark_repository.biden_tweets_daily_avg()}"
+
+
+@app.route("/trump/tweets/daily_avg")
+def trump_tweets_daily_avg():
+    return f"{spark_repository.trump_tweets_daily_avg()}"
+
+
+@app.route("/trump/tweets/mentions")
+def trump_most_mentions():
+    return spark_repository.trump_most_mentions()
+
+
+@app.route("/biden/tweets/mentions")
+def biden_most_mentions():
+    return spark_repository.biden_most_mentions()
