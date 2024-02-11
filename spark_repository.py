@@ -68,10 +68,10 @@ class SparkRepository:
             .groupby("day", "hashtag").count() \
             .withColumn("row",
                         row_number().over(Window.partitionBy("day").orderBy(col("count").desc()))) \
-            .filter(col("row") <= limit)\
-            .drop("row")\
+            .filter(col("row") <= limit) \
+            .drop("row") \
             .select(col("day"), col("hashtag"), col("count")) \
-            .orderBy(col("day").asc())\
+            .orderBy(col("day").asc()) \
             .collect()
         return [row.asDict() for row in result]
 
@@ -97,7 +97,7 @@ class SparkRepository:
             .select(
                 day("created_at").alias("day"), col("tweet_id"), col("text"),
                 col("hashtags"), col("retweet_count"),
-                col("favorite_count"), col("user_name")).orderBy(col("day").asc())\
+                col("favorite_count"), col("user_name")).orderBy(col("day").asc()) \
             .collect()
         return [row.asDict() for row in result]
 
@@ -122,63 +122,123 @@ class SparkRepository:
         return self._biden_tweets.select(explode(col("hashtags"))).distinct().count()
 
     def biden_tweet_daily_frequency(self):
-        result = self._biden_tweets.groupBy(day(col("created_at")).alias('day')).count().orderBy(col('day').asc()).collect()
+        result = self._biden_tweets.groupBy(day(col("created_at")).alias('day')).count().orderBy(
+            col('day').asc()).collect()
         return [row.asDict() for row in result]
 
     def trump_tweet_daily_frequency(self):
-        result = self._trump_tweets.groupBy(day(col("created_at")).alias('day')).count().orderBy(col('day').asc()).collect()
+        result = self._trump_tweets.groupBy(day(col("created_at")).alias('day')).count().orderBy(
+            col('day').asc()).collect()
         return [row.asDict() for row in result]
 
     def biden_tweet_hourly_frequency(self):
-        result = self._biden_tweets.groupBy(hour(col("created_at")).alias('hour')).count().orderBy(col('hour').asc()).collect()
+        result = self._biden_tweets.groupBy(hour(col("created_at")).alias('hour')).count().orderBy(
+            col('hour').asc()).collect()
         return [row.asDict() for row in result]
 
     def trump_tweet_hourly_frequency(self):
-        result = self._trump_tweets.groupBy(hour(col("created_at")).alias('hour')).count().orderBy(col('hour').asc()).collect()
+        result = self._trump_tweets.groupBy(hour(col("created_at")).alias('hour')).count().orderBy(
+            col('hour').asc()).collect()
         return [row.asDict() for row in result]
 
     def biden_hashtags(self):
-        result = self._biden_tweets\
-            .select(explode(col("hashtags")).alias("hashtag"))\
-            .groupBy("hashtag").count()\
-            .orderBy(col("count").desc())\
+        result = self._biden_tweets \
+            .select(explode(col("hashtags")).alias("hashtag")) \
+            .groupBy("hashtag").count() \
+            .orderBy(col("count").desc()) \
             .collect()
         return [row.asDict() for row in result]
 
     def trump_hashtags(self):
-        result = self._trump_tweets\
-            .select(explode(col("hashtags")).alias("hashtag"))\
-            .groupBy("hashtag").count()\
-            .orderBy(col("count").desc())\
+        result = self._trump_tweets \
+            .select(explode(col("hashtags")).alias("hashtag")) \
+            .groupBy("hashtag").count() \
+            .orderBy(col("count").desc()) \
             .collect()
         return [row.asDict() for row in result]
 
     def biden_mentions(self):
-        result = self._biden_tweets\
-            .select(explode(col("mentions")).alias("mention"))\
-            .groupBy("mention").count()\
-            .orderBy(col("count").desc())\
+        result = self._biden_tweets \
+            .select(explode(col("mentions")).alias("mention")) \
+            .groupBy("mention").count() \
+            .orderBy(col("count").desc()) \
             .collect()
         return [row.asDict() for row in result]
 
     def trump_mentions(self):
-        result = self._trump_tweets\
-            .select(explode(col("mentions")).alias("mention"))\
-            .groupBy("mention").count()\
-            .orderBy(col("count").desc())\
+        result = self._trump_tweets \
+            .select(explode(col("mentions")).alias("mention")) \
+            .groupBy("mention").count() \
+            .orderBy(col("count").desc()) \
             .collect()
         return [row.asDict() for row in result]
 
     def trump_most_popular(self, limit):
-        result = self._trump_tweets\
-            .orderBy(col("retweet_count").desc())\
-            .limit(limit)\
+        result = self._trump_tweets \
+            .orderBy(col("retweet_count").desc()) \
+            .limit(limit) \
             .collect()
         return [row.asDict() for row in result]
 
     def biden_most_popular(self, limit):
-        result = self._biden_tweets\
-            .orderBy(col("retweet_count").desc())\
-            .limit(limit)\
+        result = self._biden_tweets \
+            .orderBy(col("retweet_count").desc()) \
+            .limit(limit) \
+            .collect()
+        return [row.asDict() for row in result]
+
+    def biden_most_used_hashtags(self):
+        result = self._biden_tweets.select(explode(col("hashtags")).alias("hashtag")) \
+            .groupby(col("hashtag")).count() \
+            .orderBy(col("count").desc()) \
+            .collect()
+        return [row.asDict() for row in result]
+
+    def trump_most_used_hashtags(self):
+        result = self._trump_tweets.select(explode(col("hashtags")).alias("hashtag")) \
+            .groupby(col("hashtag")).count() \
+            .orderBy(col("count").desc()) \
+            .collect()
+        return [row.asDict() for row in result]
+
+    def trump_most_tweets_day(self):
+        return self._trump_tweets \
+            .groupby(day(col('created_at')).alias('day')) \
+            .count().orderBy(col('count').desc()) \
+            .first() \
+            .asDict()
+
+    def biden_most_tweets_day(self):
+        return self._biden_tweets \
+            .groupby(day(col('created_at')).alias('day')) \
+            .count().orderBy(col('count').desc()) \
+            .first() \
+            .asDict()
+
+    def biden_tweets_daily_avg(self):
+        return self._biden_tweets \
+            .groupby(day(col("created_at"))).count() \
+            .select(avg(col("count"))) \
+            .collect()[0][0]
+
+    def trump_tweets_daily_avg(self):
+        return self._trump_tweets \
+            .groupby(day(col("created_at"))).count() \
+            .select(avg(col("count"))) \
+            .collect()[0][0]
+
+    def trump_most_mentions(self):
+        result = self._trump_tweets \
+            .select(explode(col("mentions")).alias("mention")) \
+            .groupBy("mention").count() \
+            .orderBy(col("count").desc()) \
+            .collect()
+        return [row.asDict() for row in result]
+
+    def biden_most_mentions(self):
+        result = self._biden_tweets \
+            .select(explode(col("mentions")).alias("mention")) \
+            .groupBy("mention").count() \
+            .orderBy(col("count").desc()) \
             .collect()
         return [row.asDict() for row in result]
