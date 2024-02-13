@@ -7,6 +7,8 @@ from constants import *
 
 DATASET_FOLDER = './dataset'
 SCHEMA_DIR = './dataset/schema.json'
+DATASET_SA_FOLDER = './dataset/sentiment'
+SA_SCHEMA_DIR = './dataset/sentiment/schema_sa.json'
 SAMPLE_FRACTION = 0.8
 SEED = 42
 
@@ -19,6 +21,7 @@ class Dataset:
         self.twitter_data = get_twitter_data(spark)
         self.trump_tweets = get_trump_tweets(spark)
         self.biden_tweets = get_biden_tweets(spark)
+        self.sa_data = get_sa_data(spark)
         self.twitter_data.count()
         self.trump_tweets.count()
         self.biden_tweets.count()
@@ -74,3 +77,17 @@ def get_trump_tweets(spark):
         .withColumn("mentions", from_json(col("mentions"), ArrayType(StringType())))
 
     return trump_tweets.cache()
+
+
+def get_sa_data(spark):
+    file_names = [f"{DATASET_SA_FOLDER}/dataset_sa_{d}.csv" for d in range(DAY_START, DAY_END + 1)]
+    schema = StructType.fromJson(json.loads(open(SCHEMA_DIR).read()))
+    sentiment_data = spark.read \
+        .option("header", "true") \
+        .option("multiLine", "true") \
+        .option("nullValue", "NA") \
+        .option("escape", "\"") \
+        .option("quote", "\"") \
+        .option("sep", ",") \
+        .csv(file_names, schema=schema)  # .sample(fraction=SAMPLE_FRACTION, seed=SEED)
+    return sentiment_data
