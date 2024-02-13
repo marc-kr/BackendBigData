@@ -4,10 +4,11 @@ from constants import *
 
 
 class SparkRepository:
-    def __init__(self, twitter_data, trump_tweets, biden_tweets):
+    def __init__(self, twitter_data, trump_tweets, biden_tweets, sa_data):
         self._twitter_data = twitter_data
         self._trump_tweets = trump_tweets
         self._biden_tweets = biden_tweets
+        self._sa_data = sa_data
 
     def devices_count(self):
         result = self._twitter_data \
