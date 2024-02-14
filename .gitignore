@@ -37,3 +37,4 @@ dataset/dataset_6.csv
 dataset/dataset_7.csv
 __pycache__/controllers.cpython-311.pyc
 dataset/schema.json
+query_sentiment.py
