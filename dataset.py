@@ -81,7 +81,7 @@ def get_trump_tweets(spark):
 
 def get_sa_data(spark):
     file_names = [f"{DATASET_SA_FOLDER}/dataset_sa_{d}.csv" for d in range(DAY_START, DAY_END + 1)]
-    schema = StructType.fromJson(json.loads(open(SCHEMA_DIR).read()))
+    schema = StructType.fromJson(json.loads(open(SA_SCHEMA_DIR).read()))
     sentiment_data = spark.read \
         .option("header", "true") \
         .option("multiLine", "true") \
