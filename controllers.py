@@ -183,3 +183,52 @@ def trump_most_mentions():
 @app.route("/biden/tweets/mentions")
 def biden_most_mentions():
     return spark_repository.biden_most_mentions()
+
+
+@app.route("/sentiment/<candidate>/sentiments_count")
+def candidate_sentiments_count(candidate):
+    return spark_repository.candidate_sentiments_count(candidate)
+
+
+@app.route("/sentiment/<candidate>/mean_sentiment_score/by_day")
+def mean_sentiment_by_day(candidate):
+    return spark_repository.mean_sentiment_by_day(candidate)
+
+
+@app.route("/sentiment/<candidate>/mean_sentiment_score/by_state")
+def mean_sentiment_by_state(candidate):
+    return spark_repository.mean_sentiment_by_state(candidate)
+
+
+@app.route("/sentiment/<candidate>/supporters")
+def most_supportive_users(candidate):
+    limit = int(request.args.get('limit', default=10))
+    return spark_repository.candidate_supporters(candidate, limit)
+
+
+@app.route("/sentiment/<candidate>/haters")
+def haters(candidate):
+    limit = int(request.args.get('limit', default=10))
+    return spark_repository.candidate_haters(candidate, limit)
+
+
+@app.route("/sentiment/<candidate>/<sentiment>/count/by_day")
+def candidate_sentiment_count_by_day(candidate, sentiment):
+    return spark_repository.candidate_sentiment_count_by_day(candidate, sentiment)
+
+
+@app.route("/sentiment/<candidate>/<sentiment>/count/by_state")
+def candidate_sentiment_count_by_state(candidate, sentiment):
+    return spark_repository.candidate_sentiment_count_by_state(candidate, sentiment)
+
+
+@app.route("/users/most_mentioned")
+def most_mentioned_users():
+    limit = int(request.args.get('limit', default=10))
+    return spark_repository.most_mentioned(limit)
+
+
+@app.route("/users/most_mentioned/by_day")
+def most_mentioned_by_day():
+    limit = int(request.args.get('limit', default=10))
+    return spark_repository.most_mentioned_by_day(limit)
