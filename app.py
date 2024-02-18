@@ -10,8 +10,8 @@ from spark_repository import SparkRepository
 
 app = Flask(__name__)
 spark = SparkSession.builder \
-    .config('spark.driver.memory', '3g') \
-    .config('spark.executor.memory', '2g') \
+    .config('spark.driver.memory', '4g') \
+    .config('spark.executor.memory', '3g') \
     .config("spark.driver.bindAddress", "127.0.0.1")\
     .getOrCreate()
 dataset = Dataset(spark)
